@@ -201,28 +201,6 @@ class Vales_Seo {
 				'type'  => 'tab',
 			);
 			$fields[] = array(
-				'key'           => static::generate_acf_field_id( $post_type_object->name . '_archive_title' ),
-				'label'         => 'Archive Page: Page Title',
-				'name'          => static::PLUGIN_SLUG . '_post_type_' . $post_type_object->name . '_archive_title',
-				'type'          => 'text',
-				'default_value' => '{{posttype}} {{sep}} {{sitename}}',
-			);
-			$fields[] = array(
-				'key'   => static::generate_acf_field_id( $post_type_object->name . '_archive_description' ),
-				'label' => 'Archive Page: Page Description',
-				'name'  => static::PLUGIN_SLUG . '_post_type_' . $post_type_object->name . '_archive_description',
-				'type'  => 'textarea',
-				'rows'  => '3',
-			);
-			/*
-			$fields[] = array(
-				'key'   => static::generate_acf_field_id( $post_type_object->name . '_archive_keywords' ),
-				'label' => 'Archive Page: Page Keywords',
-				'name'  => static::PLUGIN_SLUG . '_post_type_' . $post_type_object->name . '_archive_keywords',
-				'type'  => 'text',
-			);
-			*/
-			$fields[] = array(
 				'key'           => static::generate_acf_field_id( $post_type_object->name . '_single_pattern_title' ),
 				'label'         => 'Single Object: Page Title Pattern',
 				'name'          => static::PLUGIN_SLUG . '_post_type_' . $post_type_object->name . '_single_pattern_title',
@@ -252,6 +230,55 @@ class Vales_Seo {
 				'message'       => 'Enabled',
 				'default_value' => 1,
 			);
+			if ( $post_type_object->has_archive ) {
+				$fields[] = array(
+					'key'           => static::generate_acf_field_id( $post_type_object->name . '_archive_title' ),
+					'label'         => 'Archive Page: Page Title',
+					'name'          => static::PLUGIN_SLUG . '_post_type_' . $post_type_object->name . '_archive_title',
+					'type'          => 'text',
+					'default_value' => '{{posttype}} {{sep}} {{sitename}}',
+				);
+				$fields[] = array(
+					'key'   => static::generate_acf_field_id( $post_type_object->name . '_archive_description' ),
+					'label' => 'Archive Page: Page Description',
+					'name'  => static::PLUGIN_SLUG . '_post_type_' . $post_type_object->name . '_archive_description',
+					'type'  => 'textarea',
+					'rows'  => '3',
+				);
+				/*
+				$fields[] = array(
+					'key'   => static::generate_acf_field_id( $post_type_object->name . '_archive_keywords' ),
+					'label' => 'Archive Page: Page Keywords',
+					'name'  => static::PLUGIN_SLUG . '_post_type_' . $post_type_object->name . '_archive_keywords',
+					'type'  => 'text',
+				);
+				*/
+			}
+			$taxonomies = get_object_taxonomies( $post_type_object->name, 'objects' );
+			foreach ( $taxonomies as $taxonomy_object ) {
+				$fields[] = array(
+					'key'           => static::generate_acf_field_id( $post_type_object->name . '_taxonomy_' . $taxonomy_object->name . '_pattern_title' ),
+					'label'         => $taxonomy_object->labels->name . ': Page Title',
+					'name'          => static::PLUGIN_SLUG . '_taxonomy_' . $taxonomy_object->name . '_pattern_title',
+					'type'          => 'text',
+					'default_value' => '{{posttype}} {{sep}} {{sitename}}',
+				);
+				$fields[] = array(
+					'key'   => static::generate_acf_field_id( $post_type_object->name . '_taxonomy_' . $taxonomy_object->name . '_pattern_description' ),
+					'label' => $taxonomy_object->labels->name . ': Page Description',
+					'name'  => static::PLUGIN_SLUG . '_taxonomy_' . $taxonomy_object->name . '_pattern_description',
+					'type'  => 'textarea',
+					'rows'  => '3',
+				);
+				/*
+				$fields[] = array(
+					'key'   => static::generate_acf_field_id( $post_type_object->name . '_taxonomy_' . $taxonomy_object->name . '_pattern_keywords' ),
+					'label' => $taxonomy_object->labels->name . ': Page Keywords',
+					'name'  => static::PLUGIN_SLUG . '_taxonomy_' . $taxonomy_object->name . '_pattern_keywords',
+					'type'  => 'text',
+				);
+				*/
+			}
 		}
 		$fields[] = array(
 			'key'   => 'field_eclzbibamucaj80r',
@@ -279,6 +306,10 @@ class Vales_Seo {
 		<tr>
 			<td><code>{{title}}</code></td>
 			<td>The title of current object</td>
+		</tr>
+		<tr>
+			<td><code>{{excerpt}}</code></td>
+			<td>The excerpt of current object</td>
 		</tr>
 		<tr>
 			<td><code>{{posttype}}</code></td>
@@ -452,14 +483,16 @@ EOF
 			$post_type_object = get_post_type_object( $post_type );
 			$content = get_field( static::PLUGIN_SLUG . '_post_type_' . $post_type_object->name . '_archive_' . $meta_name, 'option' );
 		} elseif ( is_tax() ) {
-			// TODO
+			$queried_object = get_queried_object();
+			$taxonomy_object = get_taxonomy( $queried_object->taxonomy );
+			$content = get_field( static::PLUGIN_SLUG . '_taxonomy_' . $taxonomy_object->name . '_pattern_' . $meta_name, 'option' );
 		} elseif ( is_singular() ) {
 			// get single meta
-			$_post = get_queried_object();
-			$content = get_field( static::PLUGIN_SLUG . '_singular_' . $meta_name, $_post->ID );
+			$queried_object = get_queried_object();
+			$content = get_field( static::PLUGIN_SLUG . '_singular_' . $meta_name, $queried_object->ID );
 			if ( empty( $content ) ) {
 				// fallback to get pattern
-				$content = get_field( static::PLUGIN_SLUG . '_post_type_' . $_post->post_type . '_single_pattern_' . $meta_name, 'option' );
+				$content = get_field( static::PLUGIN_SLUG . '_post_type_' . $queried_object->post_type . '_single_pattern_' . $meta_name, 'option' );
 			}
 		}
 		// pagination
@@ -476,14 +509,23 @@ EOF
 		if ( empty( $pattern ) ) {
 			return $pattern;
 		}
-		// prepare  current post type name
+		$queried_object = get_queried_object();
+		// prepare post type
 		if ( is_singular() ) {
 			$post_type_object = get_post_type_object( get_post_type() );
 			$post_type_name = $post_type_object->labels->name;
 		} else {
 			$post_type_name = post_type_archive_title( '', false );
 		}
-		// prepare  separator string
+		// prepare for taxonomy
+		if ( is_tax() ) {
+			$term_name = apply_filters( 'single_term_title', $queried_object->name );
+			$taxonomy = get_taxonomy( $queried_object->taxonomy );
+			$taxonomy_name = $taxonomy->labels->name;
+		} else {
+			$term_name = $taxonomy_name = '';
+		}
+		// prepare separator string
 		$separator = static::$separators['dash'];
 		$separator_user = get_field( static::PLUGIN_SLUG . '_global_separator', 'option' );
 		if ( array_key_exists( $separator_user, static::$separators ) ) {
@@ -495,15 +537,21 @@ EOF
 				'{{sitename}}',
 				'{{sitedesc}}',
 				'{{title}}',
+				'{{excerpt}}',
 				'{{posttype}}',
+				'{{term}}',
+				'{{taxonomy}}',
 				'{{searchquery}}',
 				'{{sep}}',
 			),
 			array(
 				get_bloginfo( 'name' ),
 				get_bloginfo( 'description' ),
-				single_post_title( '', false ),
+				get_the_title( $queried_object ),
+				get_the_excerpt( $queried_object ),
 				$post_type_name,
+				$term_name,
+				$taxonomy_name,
 				get_query_var( 's' ),
 				$separator,
 			),
