@@ -316,6 +316,18 @@ class Vales_Seo {
 			<td>The name of current post type</td>
 		</tr>
 		<tr>
+			<td><code>{{term}}</code></td>
+			<td>The name of current term</td>
+		</tr>
+		<tr>
+			<td><code>{{termdesc}}</code></td>
+			<td>The description of current term</td>
+		</tr>
+		<tr>
+			<td><code>{{taxonomy}}</code></td>
+			<td>The name of current taxonomy</td>
+		</tr>
+		<tr>
 			<td><code>{{searchquery}}</code></td>
 			<td>The query word to search</td>
 		</tr>
@@ -520,10 +532,11 @@ EOF
 		// prepare for taxonomy
 		if ( is_tax() ) {
 			$term_name = apply_filters( 'single_term_title', $queried_object->name );
+			$term_description = $queried_object->description;
 			$taxonomy = get_taxonomy( $queried_object->taxonomy );
 			$taxonomy_name = $taxonomy->labels->name;
 		} else {
-			$term_name = $taxonomy_name = '';
+			$term_name = $term_description = $taxonomy_name = '';
 		}
 		// prepare separator string
 		$separator = static::$separators['dash'];
@@ -540,6 +553,7 @@ EOF
 				'{{excerpt}}',
 				'{{posttype}}',
 				'{{term}}',
+				'{{termdesc}}',
 				'{{taxonomy}}',
 				'{{searchquery}}',
 				'{{sep}}',
@@ -551,6 +565,7 @@ EOF
 				get_the_excerpt( $queried_object ),
 				$post_type_name,
 				$term_name,
+				$term_description,
 				$taxonomy_name,
 				get_query_var( 's' ),
 				$separator,
