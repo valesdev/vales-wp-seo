@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: Vales SEO
+ * Plugin Name: Vales WP-SEO
  * Description: Silence is golden.
  * Version: 1.0.0
  * Author: Vales, Inc.
@@ -8,10 +8,10 @@
  */
 
 
-class Vales_Seo {
+class Vales_SEO {
 
-	const PLUGIN_NAME = 'Vales SEO';
-	const PLUGIN_SLUG = 'vales_seo';
+	const PLUGIN_NAME = 'Vales WP-SEO';
+	const PLUGIN_SLUG = 'vales_wp_seo';
 
 	private static $separators = array(
 		'dash'   => '-',
@@ -348,7 +348,7 @@ EOF
 			'message' => (
 <<< 'EOF'
 <p>The restoration will permanently delete all user settings in Vales SEO plugin. This operation cannot be undone.</p>
-<a class="button-secondary" href="javascript:void(0);" id="vales_seo_js_restore_settings">Yes, please reset all settings for me</a>
+<a class="button-secondary" href="javascript:void(0);" id="vales_wp_seo_js_restore_settings">Yes, please reset all settings for me</a>
 EOF
 			),
 		);
@@ -579,13 +579,13 @@ EOF
 		echo <<< 'EOF'
 <script type="text/javascript">
 	jQuery(document).ready( function () {
-		jQuery(document).on( 'click', '#vales_seo_js_restore_settings', function (e) {
+		jQuery(document).on( 'click', '#vales_wp_seo_js_restore_settings', function (e) {
 			if ( window.confirm( 'Are you sure?' ) ) {
 				jQuery.ajax( {
 					'url' : ajaxurl,
 					'method' : 'POST',
 					'data' : {
-						'action' : 'vales_seo',
+						'action' : 'vales_wp_seo',
 						'do' : 'restore_settings',
 					},
 					'success' : function ( res ) {
@@ -619,5 +619,5 @@ EOF;
 
 }
 
-Vales_Seo::init();
+Vales_SEO::init();
 
