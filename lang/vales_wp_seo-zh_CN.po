@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WordPress Plugin 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-14 22:28+0800\n"
+"POT-Creation-Date: 2015-08-18 08:00+0800\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Chon <ychongsaytc@gmail.com>\n"
 "Language-Team: Vales, Inc. <https://valesdigital.com/>\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Poedit-SearchPath-0: .\n"
 
-#: plugin.php:20
+#: plugin.php:51
 #, php-format
 msgid "Please install and activate %s plugin."
 msgstr "请安装并激活 %s 插件。"
